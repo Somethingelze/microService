@@ -19,6 +19,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orders_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin
-    volumes:
-      - postgres_data:/var/lib/postgresql/app
+volumes:
+  postgres_data:
 

@@ -1,50 +1,43 @@
 package com.some.micro.controllers;
 
 import com.some.micro.model.entities.Order;
-import com.some.micro.model.enums.Status;
-import com.some.micro.repository.OrdersRepository;
-import com.some.micro.repository.UsersRepository;
+import com.some.micro.services.OrderService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
 public class OrdersController {
 
-    OrdersRepository ordersRepository;
-    UsersRepository usersRepository;
+    OrderService orderService;
 
-    public OrdersController(OrdersRepository ordersRepository, UsersRepository usersRepository) {
-        this.ordersRepository = ordersRepository;
-        this.usersRepository = usersRepository;
+    public OrdersController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
-    @GetMapping
-    public List<Order> getOrders() {
-        return ordersRepository.findAll();
-    }
-
-    @GetMapping("/all")
+    @GetMapping()
     public List<Order> getAllOrders() {
-        return ordersRepository.findAll();
+        return orderService.getAllOrders();
+    }
+
+    @GetMapping("/{id}")
+    public Order getAllOrders(@PathVariable Long id) {
+        return orderService.getOrderById(id);
     }
 
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
-        return ordersRepository.save(order);
+        return orderService.createOrder(order);
     }
 
     @PutMapping("/{id}")
-    public Order updateOrder(@PathVariable Long id, @RequestParam Status status) {
-        Optional<Order> order = ordersRepository.findById(id);
-        if (order.isPresent()) {
-            order.get().setStatus(status);
-            return ordersRepository.save(order.get());
-        } else {
-            return null;
-        }
+    public Order updateOrder(@PathVariable Long id, @RequestBody Order order) {
+        return orderService.updateOrder(id, order);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
     }
 }

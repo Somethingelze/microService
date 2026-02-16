@@ -9,18 +9,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @RequiredArgsConstructor
 @Getter
 @Setter
-@Table(name = "Users")
+@Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
     UUID id;
 
     @Column(nullable = false, unique = true)
@@ -31,5 +34,18 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     Role role;
+
+    @OneToMany(mappedBy = "user", cascade =  CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<Order> orders = new ArrayList<>();
+
+    public void addOrder(Order order) {
+        orders.add(order);
+        order.setUser(this);
+    }
+
+    public void removeOrder(Order order) {
+        orders.remove(order);
+        order.setUser(null);
+    }
 
 }
