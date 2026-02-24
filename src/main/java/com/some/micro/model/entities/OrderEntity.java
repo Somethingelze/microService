@@ -2,10 +2,9 @@ package com.some.micro.model.entities;
 
 import com.some.micro.model.enums.Status;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,24 +15,28 @@ import java.util.UUID;
 @Entity
 @Table(name = "orders")
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Order {
+public class OrderEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
+    @NotBlank
     UUID id;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    User user;
+    UserEntity user;
 
+    @NotBlank
+    @Size(max = 255, message = "Описание слишком длинное")
     String description;
-    //описание заказа
 
     @Enumerated(EnumType.STRING)
+    @NotBlank
     Status status;
 
     @CreationTimestamp
@@ -41,4 +44,5 @@ public class Order {
 
     @UpdateTimestamp
     LocalDateTime updatedAt;
+
 }

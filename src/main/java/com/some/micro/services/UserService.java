@@ -1,34 +1,17 @@
 package com.some.micro.services;
 
-import com.some.micro.exceptions.UserNotFoundException;
-import com.some.micro.model.entities.User;
-import com.some.micro.repository.OrdersRepository;
-import com.some.micro.repository.UsersRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import com.some.micro.model.dto.UserResponseDto;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
-import java.util.logging.Logger;
 
-@Service
-public class UserService {
+public interface UserService extends UserDetailsService {
 
-    private final UsersRepository usersRepository;
-    private final Logger log = Logger.getLogger(UserService.class.getName());
-
-    public UserService(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    List<UserResponseDto> getAllUsers();
+    void deleteUserById(Long id);
+    boolean existsByUsername(String username);
+    boolean existsById(Long id);
+    void registerUser(String username, String rawPassword);
+    UserDetails loadUserByUsername(String username);
     }
-
-    public List<User> getAllUsers() {
-        return usersRepository.findAll();
-    }
-
-    @Transactional
-    public ResponseEntity<String> deleteUserById(Long id) {
-        usersRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with id: " + id + "doesn't exist"));
-        usersRepository.deleteById(id);
-        return ResponseEntity.ok().body("Deleted user with id: " + id);
-    }
-}

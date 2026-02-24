@@ -1,7 +1,7 @@
 package com.some.micro.controllers;
 
-import com.some.micro.model.entities.User;
-import com.some.micro.services.UserService;
+import com.some.micro.model.dto.UserResponseDto;
+import com.some.micro.services.impl.UserServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +10,20 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UsersController {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    public UsersController(UserService userService) {
-        this.userService = userService;
+    public UsersController(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    public List<UserResponseDto> getUsers() {
+        return userServiceImpl.getAllUsers();
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.deleteUserById(id);
+        userServiceImpl.deleteUserById(id);
     }
 
 }

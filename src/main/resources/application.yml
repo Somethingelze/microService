@@ -1,9 +1,33 @@
+#Database connection
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres-micro
+    url: jdbc:postgresql://138.124.35.157:5432/micro-db
     username: some
-    password: 123
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
+  security:
+    user:
+      name: some
+      password: 123
+      roles: admin
+
+#logging
+logging:
+  file:
+    name: logs/app.log
+  level:
+    root: info
+    web: debug
+    security: debug
+
+#Security
+security:
+  jwt:
+    secret_key: ${JWT_SECRET}
+    access_token_expiration: 36000000 # 10 hours
+    refresh_token_expiration: 252000000 # 7 days
+
