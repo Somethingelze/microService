@@ -1,5 +1,6 @@
 package com.some.micro.services.impl;
 
+import com.some.micro.configuration.SecurityProvider;
 import com.some.micro.exceptions.OrderNotFoundException;
 import com.some.micro.mappers.OrderMapper;
 import com.some.micro.model.dto.OrderCreateDto;
@@ -7,11 +8,14 @@ import com.some.micro.model.dto.OrderResponseDto;
 import com.some.micro.model.entities.OrderEntity;
 import com.some.micro.model.enums.Status;
 import com.some.micro.repository.OrderRepository;
+import com.some.micro.repository.UserRepository;
 import com.some.micro.services.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +28,10 @@ import java.util.logging.Logger;
 public class OrderServiceImpl implements OrderService {
 
     OrderRepository orderRepository;
+    UserRepository userRepository;
     Logger log = Logger.getLogger(OrderServiceImpl.class.getName());
     OrderMapper orderMapper;
+    SecurityProvider securityProvider;
 
     @Override
     public List<OrderResponseDto> getAllOrders() {
@@ -37,17 +43,28 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto getOrderById(UUID id) {
-        log.info("Getting order by id: " + id);
-        return orderMapper.toOrderResponseDto(orderRepository.findById(id));
+        return orderRepository.findById(id)
+                .map(orderMapper::toOrderResponseDto)
+                .orElseThrow(() -> new OrderNotFoundException("Order with id:  " + id + " not found"));
     }
 
     @Override
     @Transactional
-    public OrderEntity createOrder(OrderCreateDto orderCreateDto) {
+    public OrderResponseDto createOrder(OrderCreateDto orderCreateDto) {
         log.info("Creating order: " + orderCreateDto.description());
-        OrderEntity order = orderMapper.toOrderEntity((orderCreateDto));
-        order.setStatus(Status.CREATED);
-        return orderRepository.save(order);
+
+        String username = securityProvider.getUsername();
+        OrderEntity order = orderMapper.toOrderEntity(orderCreateDto);
+
+        return userRepository.findByUsername(username)
+                .map(user -> {
+                    order.setDescription(orderCreateDto.description());
+                            order.setStatus(Status.CREATED);
+                            order.setUser(user);
+                            log.info("Order " + order.getDescription() + " was created");
+                    return orderMapper.toOrderResponseDto(orderRepository.save(order));
+                })
+                .orElseThrow(() -> new UsernameNotFoundException("User with name" + username + " not found"));
     }
 
     @Override
@@ -55,19 +72,23 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(UUID id) {
         log.info("Deleting order with id: " + id);
         if (!orderRepository.existsById(id)) {
-            throw new OrderNotFoundException("Order not found");
+            throw new OrderNotFoundException("Order with id: " + id + " not found");
         }
         orderRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public OrderResponseDto updateOrder(UUID id, OrderCreateDto orderCreateDto) {
-        log.info("Updating order with id: " + id);
-        OrderEntity order = orderRepository.findById(id);
-        if (order == null) {
-            throw new OrderNotFoundException("Order with id: " + id + " not found");
-        } else {
-            return orderMapper.toOrderResponseDto(orderRepository.save(order));
-        }
+        log.info("Updating order with id: " + id + " has started");
+
+        return orderRepository.findById(id)
+                .map(
+                        order -> {
+                            order.setDescription(orderCreateDto.description());
+                        log.info("Updating order with id: " + id + " has finished");
+                        return orderMapper.toOrderResponseDto(order);
+                        })
+                .orElseThrow(() -> new OrderNotFoundException("Order with id: " + id + " not found"));
     }
 }

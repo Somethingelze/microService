@@ -5,6 +5,7 @@ import com.some.micro.services.impl.UserServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,7 +23,7 @@ public class UsersController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable UUID id) {
         userServiceImpl.deleteUserById(id);
     }
 

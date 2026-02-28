@@ -1,6 +1,5 @@
 package com.some.micro.services.impl;
 
-import com.some.micro.exceptions.UserNotFoundException;
 import com.some.micro.mappers.UserMapper;
 import com.some.micro.model.dto.UserResponseDto;
 import com.some.micro.model.entities.UserEntity;
@@ -17,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     Logger log = Logger.getLogger(UserServiceImpl.class.getName());
     PasswordEncoder passwordEncoder;
-    UserMapper  userMapper;
+    UserMapper userMapper;
 
     @Override
     public List<UserResponseDto> getAllUsers() {
@@ -37,11 +37,6 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
-    @Override
-    public void deleteUserById(Long id) {
-        log.info("Deleting user with id: " + id);
-        userRepository.deleteById(id);
-    }
 
     @Override
     @Transactional
@@ -60,15 +55,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(UUID id) {
         log.info("Checking if user with id: " + id);
         return userRepository.findById(id).isPresent();
+    }
+
+    @Override
+    public void deleteUserById(UUID id) {
+        log.info("Deleting user with id: " + id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Loading user by username: " + username);
         return userRepository.findByUsername(username).orElseThrow(
-                () -> new UserNotFoundException("User with username: " + username +  " doesn't exist"));
+                () -> new UsernameNotFoundException("User with username: " + username +  " doesn't exist"));
     }
 }

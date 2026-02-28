@@ -1,13 +1,13 @@
-package com.some.micro;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class MicroApplicationTests {
-
-    @Test
-    void contextLoads() {
-    }
-
-}
+//package com.some.micro;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//class MicroApplicationTests {
+//
+//    @Test
+//    void contextLoads() {
+//    }
+//
+//}

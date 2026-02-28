@@ -4,6 +4,7 @@ import com.some.micro.model.dto.OrderCreateDto;
 import com.some.micro.model.dto.OrderResponseDto;
 import com.some.micro.model.entities.OrderEntity;
 import com.some.micro.services.impl.OrderServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,12 +31,12 @@ public class OrdersController {
     }
 
     @PostMapping
-    public OrderEntity createOrder(@RequestBody OrderCreateDto orderCreateDto) {
+    public OrderResponseDto createOrder(@Valid @RequestBody OrderCreateDto orderCreateDto) {
         return orderServiceImpl.createOrder(orderCreateDto);
     }
 
     @PutMapping("/{id}")
-    public OrderResponseDto updateOrder(@PathVariable UUID id, @RequestBody OrderCreateDto orderCreateDto) {
+    public OrderResponseDto updateOrder(@PathVariable UUID id, @Valid @RequestBody OrderCreateDto orderCreateDto) {
         return orderServiceImpl.updateOrder(id, orderCreateDto);
     }
 

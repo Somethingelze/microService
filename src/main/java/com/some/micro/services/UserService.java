@@ -5,13 +5,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService extends UserDetailsService {
 
     List<UserResponseDto> getAllUsers();
-    void deleteUserById(Long id);
     boolean existsByUsername(String username);
-    boolean existsById(Long id);
+    boolean existsById(UUID id);
+    void deleteUserById(UUID id);
+
     void registerUser(String username, String rawPassword);
     UserDetails loadUserByUsername(String username);
     }
