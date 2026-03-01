@@ -14,11 +14,11 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -34,11 +34,11 @@ public class OrderServiceImpl implements OrderService {
     SecurityProvider securityProvider;
 
     @Override
-    public List<OrderResponseDto> getAllOrders() {
+    public Page<OrderResponseDto> getAllOrders(Pageable pageable) {
         log.info("Getting all orders");
-        return orderRepository.findAll().stream()
-                .map(orderMapper::toOrderResponseDto)
-                .toList();
+
+        return orderRepository.findAll(pageable)
+                .map(orderMapper::toOrderResponseDto);
     }
 
     @Override

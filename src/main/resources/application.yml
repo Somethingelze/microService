@@ -1,4 +1,3 @@
-#Database connection
 spring:
   datasource:
     url: jdbc:postgresql://138.124.35.157:5432/micro-db
@@ -15,7 +14,14 @@ spring:
       password: 123
       roles: admin
 
-#logging
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    table: flyway_schema_history
+    locations:
+      - classpath:db/migration/schema
+      - classpath:db/migration/data
+
 logging:
   file:
     name: logs/app.log
@@ -24,7 +30,6 @@ logging:
     web: debug
     security: debug
 
-#Security
 security:
   jwt:
     secret_key: ${JWT_SECRET}

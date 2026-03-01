@@ -15,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
@@ -43,17 +47,24 @@ class OrderServiceImplTest {
     static final String USERNAME = "test_user";
 
     @Test
-    void getAllOrders_Success() {
-        OrderEntity entity = new OrderEntity();
-        OrderResponseDto dto = new OrderResponseDto("Test");
+    void getAllOrders_ShouldReturnPage() {
+        Pageable pageable = PageRequest.of(0, 5);
 
-        when(orderRepository.findAll()).thenReturn(List.of(entity));
+        OrderEntity entity = new OrderEntity();
+        OrderResponseDto dto = new OrderResponseDto("Test Description");
+
+        Page<OrderEntity> entityPage = new PageImpl<>(List.of(entity));
+
+        when(orderRepository.findAll(any(Pageable.class))).thenReturn(entityPage);
         when(orderMapper.toOrderResponseDto(entity)).thenReturn(dto);
 
-        List<OrderResponseDto> result = orderService.getAllOrders();
+        Page<OrderResponseDto> result = orderService.getAllOrders(pageable);
 
-        assertEquals(1, result.size());
-        verify(orderRepository).findAll();
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Test Description", result.getContent().getFirst().description());
+
+        verify(orderRepository).findAll(pageable);
     }
 
     @Test

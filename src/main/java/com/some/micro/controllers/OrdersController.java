@@ -2,12 +2,13 @@ package com.some.micro.controllers;
 
 import com.some.micro.model.dto.OrderCreateDto;
 import com.some.micro.model.dto.OrderResponseDto;
-import com.some.micro.model.entities.OrderEntity;
 import com.some.micro.services.impl.OrderServiceImpl;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,8 +22,8 @@ public class OrdersController {
     }
 
     @GetMapping()
-    public List<OrderResponseDto> getAllOrders() {
-        return orderServiceImpl.getAllOrders();
+    public Page<OrderResponseDto> getAllOrders(@ParameterObject Pageable pageable) {
+        return orderServiceImpl.getAllOrders(pageable);
     }
 
     @GetMapping("/{id}")
