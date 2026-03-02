@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: micro_db
     ports:
-      - "5434:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -19,11 +19,11 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+       - postgres
 
     restart: on-failure
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://138.124.35.157:5432/micro-db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/micro_db
       SPRING_DATASOURCE_USERNAME: some
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
