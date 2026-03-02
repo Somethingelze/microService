@@ -70,6 +70,6 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Loading user by username: " + username);
         return userRepository.findByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException("User with username: " + username +  " doesn't exist"));
+                () -> new UsernameNotFoundException("User with username: " + username + " doesn't exist"));
     }
 }

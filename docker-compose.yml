@@ -5,7 +5,7 @@ services:
     container_name: micro-service-db
     restart: always
     environment:
-      POSTGRES_USER: some
+      POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: micro_db
     ports:

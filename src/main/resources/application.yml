@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://138.124.35.157:5432/micro-db
-    username: some
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
