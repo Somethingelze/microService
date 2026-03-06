@@ -4,7 +4,6 @@ package com.some.micro.model.entities;
 import com.some.micro.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,31 +20,30 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "users")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    UUID id;
+    private UUID id;
 
     @NonNull
     @Column(nullable = false, unique = true)
-    String username;
+    private String username;
 
     @NonNull
     @Column(nullable = false)
-    String password;
+    private String password;
 
     @NonNull
     @Enumerated(EnumType.STRING)
-    Role role;
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<TokenEntity> tokens;
+    private List<TokenEntity> tokens;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<OrderEntity> orders = new ArrayList<>();
+    private List<OrderEntity> orders = new ArrayList<>();
 
     public void addOrder (OrderEntity order) {
         orders.add(order);

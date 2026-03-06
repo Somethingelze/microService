@@ -14,9 +14,7 @@ import com.some.micro.services.AuthentificationService;
 import com.some.micro.services.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,15 +33,14 @@ import java.util.Optional;
 @Service
 @Slf4j
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Transactional
 public class AuthenticationServiceImpl implements AuthentificationService {
 
-    UserRepository userRepository;
-    JwtService jwtService;
-    PasswordEncoder passwordEncoder;
-    AuthenticationManager authenticationManager;
-    TokenRepository tokenRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
     private final UserMapper userMapper;
 
     public void register(RegistrationRequestDto request) {

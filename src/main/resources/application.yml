@@ -5,9 +5,9 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
-    show-sql: true
     hibernate:
       ddl-auto: validate
+    show-sql: false
   security:
     user:
       name: some
@@ -21,12 +21,18 @@ spring:
 
 
 logging:
+  console:
+    enabled: true
   file:
     name: logs/app.log
   level:
     root: info
-    web: debug
-    security: debug
+    web: info
+    security: info
+    SQL: info
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} %clr(%-5level) [%X{traceId}] %clr(%logger{36}){cyan} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}] %-5level %logger{36} - %msg%n"
 
 security:
   jwt:
