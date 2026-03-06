@@ -5,11 +5,9 @@ import com.some.micro.model.dto.UserResponseDto;
 import com.some.micro.model.entities.UserEntity;
 import com.some.micro.model.enums.Role;
 import com.some.micro.repository.UserRepository;
-import com.some.micro.services.UserService;
 import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,17 +15,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements com.some.micro.services.UserService {
 
-    UserRepository userRepository;
-    Logger log = Logger.getLogger(UserServiceImpl.class.getName());
-    PasswordEncoder passwordEncoder;
-    UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     public List<UserResponseDto> getAllUsers() {

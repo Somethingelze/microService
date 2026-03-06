@@ -10,10 +10,13 @@ import com.some.micro.model.entities.UserEntity;
 import com.some.micro.repository.OrderRepository;
 import com.some.micro.repository.UserRepository;
 import com.some.micro.services.impl.OrderServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,23 +28,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
 
     @Mock
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    OrderMapper orderMapper;
+    private OrderMapper orderMapper;
     @Mock
-    SecurityProvider securityProvider;
+    private SecurityProvider securityProvider;
 
     @InjectMocks
-    OrderServiceImpl orderService;
+    private OrderServiceImpl orderService;
 
     static final UUID ID = UUID.randomUUID();
     static final String USERNAME = "test_user";
@@ -55,42 +56,42 @@ class OrderServiceImplTest {
 
         Page<OrderEntity> entityPage = new PageImpl<>(List.of(entity));
 
-        when(orderRepository.findAll(any(Pageable.class))).thenReturn(entityPage);
-        when(orderMapper.toOrderResponseDto(entity)).thenReturn(dto);
+        Mockito.when(orderRepository.findAll(Mockito.any(Pageable.class))).thenReturn(entityPage);
+        Mockito.when(orderMapper.toOrderResponseDto(entity)).thenReturn(dto);
 
         Page<OrderResponseDto> result = orderService.getAllOrders(pageable);
 
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals("Test Description", result.getContent().getFirst().description());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals("Test Description", result.getContent().getFirst().description());
 
-        verify(orderRepository).findAll(pageable);
+        Mockito.verify(orderRepository).findAll(pageable);
     }
 
     @Test
     void getOrderById_WhenNotFound_ThrowsException() {
-        when(orderRepository.findById(ID)).thenReturn(Optional.empty());
+        Mockito.when(orderRepository.findById(ID)).thenReturn(Optional.empty());
 
-        assertThrows(OrderNotFoundException.class, () -> orderService.getOrderById(ID));
-        verifyNoInteractions(orderMapper);
+        Assertions.assertThrows(OrderNotFoundException.class, () -> orderService.getOrderById(ID));
+        Mockito.verifyNoInteractions(orderMapper);
     }
 
 
     @Test
     void deleteOrder_Success() {
-        when(orderRepository.existsById(ID)).thenReturn(true);
+        Mockito.when(orderRepository.existsById(ID)).thenReturn(true);
 
         orderService.deleteOrder(ID);
 
-        verify(orderRepository).deleteById(ID);
+        Mockito.verify(orderRepository).deleteById(ID);
     }
 
     @Test
     void deleteOrder_NotFound_ThrowsException() {
-        when(orderRepository.existsById(ID)).thenReturn(false);
+        Mockito.when(orderRepository.existsById(ID)).thenReturn(false);
 
-        assertThrows(OrderNotFoundException.class, () -> orderService.deleteOrder(ID));
-        verify(orderRepository, never()).deleteById((UUID) any());
+        Assertions.assertThrows(OrderNotFoundException.class, () -> orderService.deleteOrder(ID));
+        Mockito.verify(orderRepository, Mockito.never()).deleteById( ArgumentMatchers.any(UUID.class));
     }
 
 
@@ -101,24 +102,24 @@ class OrderServiceImplTest {
         OrderEntity order = new OrderEntity();
         OrderResponseDto expected = new OrderResponseDto("New Order");
 
-        when(securityProvider.getUsername()).thenReturn(USERNAME);
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
-        when(orderMapper.toOrderEntity(createDto)).thenReturn(order);
-        when(orderRepository.save(any())).thenReturn(order);
-        when(orderMapper.toOrderResponseDto(any())).thenReturn(expected);
+        Mockito.when(securityProvider.getUsername()).thenReturn(USERNAME);
+        Mockito.when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+        Mockito.when(orderMapper.toOrderEntity(createDto)).thenReturn(order);
+        Mockito.when(orderRepository.save(ArgumentMatchers.any())).thenReturn(order);
+        Mockito.when(orderMapper.toOrderResponseDto(ArgumentMatchers.any())).thenReturn(expected);
 
         OrderResponseDto actual = orderService.createOrder(createDto);
 
-        assertNotNull(actual);
-        assertEquals(expected.description(), actual.description());
-        verify(orderRepository).save(any());
+        Assertions.assertNotNull(actual);
+        Assertions.assertEquals(expected.description(), actual.description());
+        Mockito.verify(orderRepository).save(ArgumentMatchers.any());
     }
 
     @Test
     void createOrder_UserNotFound_ThrowsException() {
-        when(securityProvider.getUsername()).thenReturn(USERNAME);
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
+        Mockito.when(securityProvider.getUsername()).thenReturn(USERNAME);
+        Mockito.when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
 
-        assertThrows(UsernameNotFoundException.class, () -> orderService.createOrder(new OrderCreateDto("Desc")));
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> orderService.createOrder(new OrderCreateDto("Desc")));
     }
 }

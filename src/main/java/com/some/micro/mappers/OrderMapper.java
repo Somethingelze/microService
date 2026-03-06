@@ -5,10 +5,10 @@ import com.some.micro.model.dto.OrderResponseDto;
 import com.some.micro.model.entities.OrderEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface OrderMapper {
 
     OrderResponseDto toOrderResponseDto(OrderEntity orderEntity);

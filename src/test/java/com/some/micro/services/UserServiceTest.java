@@ -6,8 +6,6 @@ import com.some.micro.model.entities.UserEntity;
 import com.some.micro.model.enums.Role;
 import com.some.micro.repository.UserRepository;
 import com.some.micro.services.impl.UserServiceImpl;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -27,18 +25,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@FieldDefaults(level = AccessLevel.PRIVATE)
-class UserServiceImplTest {
+class UserServiceTest {
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Mock
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @InjectMocks
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
 
     static final String USERNAME = "test_user";
     static final String RAW_PASSWORD = "password123";
@@ -68,14 +65,10 @@ class UserServiceImplTest {
 
     @Test
     void registerUser_Success() {
-        // Arrange
         when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
-        // Act
         userService.registerUser(USERNAME, RAW_PASSWORD);
 
-        // Assert
-        // Используем ArgumentCaptor, чтобы проверить, какой именно объект полетел в save()
         ArgumentCaptor<UserEntity> userCaptor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(userCaptor.capture());
 

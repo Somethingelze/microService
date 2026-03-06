@@ -10,22 +10,21 @@ import com.some.micro.services.UserService;
 import com.some.micro.services.impl.AuthenticationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthenticationController {
 
     private final AuthenticationServiceImpl authenticationService;
     private final UserService userService;
-    private final UserMapper userMapper;
-
-    public AuthenticationController(AuthenticationServiceImpl authenticationService, UserService userService, UserMapper userMapper) {
-        this.authenticationService = authenticationService;
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> me() {
@@ -36,7 +35,7 @@ public class AuthenticationController {
     public ResponseEntity<String> register(
             @RequestBody RegistrationRequestDto registrationDto) {
 
-        if(userService.existsByUsername(registrationDto.getUsername())) {
+        if (userService.existsByUsername(registrationDto.getUsername())) {
             return ResponseEntity.badRequest().body("Имя пользователя уже занято");
         }
 

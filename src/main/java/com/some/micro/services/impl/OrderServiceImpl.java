@@ -9,29 +9,25 @@ import com.some.micro.model.entities.OrderEntity;
 import com.some.micro.model.enums.Status;
 import com.some.micro.repository.OrderRepository;
 import com.some.micro.repository.UserRepository;
-import com.some.micro.services.OrderService;
 import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.logging.Logger;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl implements com.some.micro.services.OrderService {
 
-    OrderRepository orderRepository;
-    UserRepository userRepository;
-    Logger log = Logger.getLogger(OrderServiceImpl.class.getName());
-    OrderMapper orderMapper;
-    SecurityProvider securityProvider;
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final OrderMapper orderMapper;
+    private final SecurityProvider securityProvider;
 
     @Override
     public Page<OrderResponseDto> getAllOrders(Pageable pageable) {
@@ -59,9 +55,9 @@ public class OrderServiceImpl implements OrderService {
         return userRepository.findByUsername(username)
                 .map(user -> {
                     order.setDescription(orderCreateDto.description());
-                            order.setStatus(Status.CREATED);
-                            order.setUser(user);
-                            log.info("Order " + order.getDescription() + " was created");
+                    order.setStatus(Status.CREATED);
+                    order.setUser(user);
+                    log.info("Order " + order.getDescription() + " was created");
                     return orderMapper.toOrderResponseDto(orderRepository.save(order));
                 })
                 .orElseThrow(() -> new UsernameNotFoundException("User with name" + username + " not found"));
@@ -70,25 +66,30 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void deleteOrder(UUID id) {
-        log.info("Deleting order with id: " + id);
+        log.info("Starting deletion process for order: {}", id); // Здесь traceId подставится сам
+
         if (!orderRepository.existsById(id)) {
+            log.error("Deletion failed: order {} not found", id);
             throw new OrderNotFoundException("Order with id: " + id + " not found");
         }
+
         orderRepository.deleteById(id);
+        log.info("Order {} successfully deleted", id);
     }
 
     @Override
     @Transactional
     public OrderResponseDto updateOrder(UUID id, OrderCreateDto orderCreateDto) {
-        log.info("Updating order with id: " + id + " has started");
+        log.info("Starting updating order with id: " + id + " has started");
 
         return orderRepository.findById(id)
                 .map(
                         order -> {
                             order.setDescription(orderCreateDto.description());
-                        log.info("Updating order with id: " + id + " has finished");
-                        return orderMapper.toOrderResponseDto(order);
+                            log.info("Updating order with id: " + id + " has finished");
+                            return orderMapper.toOrderResponseDto(order);
                         })
                 .orElseThrow(() -> new OrderNotFoundException("Order with id: " + id + " not found"));
+
     }
 }
